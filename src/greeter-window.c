@@ -10,6 +10,7 @@
  */
 
 #include "greeter-window.h"
+#include "util.h"
 
 struct BudgieGreeterWindowPrivate {
         int x;
@@ -30,7 +31,8 @@ GtkWidget *budgie_greeter_window_new()
 /**
  * Just hook up quit for now so we can hack-test the UI
  */
-static gboolean budgie_greeter_window_delete(GtkWidget *widget, gpointer userdata)
+static gboolean budgie_greeter_window_delete(__budgie_unused__ GtkWidget *widget,
+                                             __budgie_unused__ gpointer userdata)
 {
         gtk_main_quit();
         return GDK_EVENT_STOP;
