@@ -27,7 +27,7 @@ AC_OUTPUT
 
 AC_MSG_RESULT([
         lightdm-budgie-greeter $VERSION
-        ========
+        =========================
 
         prefix:                 ${prefix}
         libdir:                 ${libdir}
