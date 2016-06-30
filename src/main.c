@@ -9,8 +9,8 @@
  * of the License, or (at your option) any later version.
  */
 
-#include <stdlib.h>
 #include <gtk/gtk.h>
+#include <stdlib.h>
 
 int main(int argc, char **argv)
 {
