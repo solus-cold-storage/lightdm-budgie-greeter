@@ -22,7 +22,7 @@ struct BudgieGreeterWindowPrivate {
  * implemented down the bottom
  */
 static void budgie_greeter_window_init(BudgieGreeterWindow *self);
-static GtkWidget *budgie_greeter_window_create_panel(BudgieGreeterWindow *self);
+static void budgie_greeter_window_create_panel(BudgieGreeterWindow *self);
 static void budgie_greeter_window_init_css(void);
 
 G_DEFINE_TYPE_WITH_PRIVATE(BudgieGreeterWindow, budgie_greeter_window, GTK_TYPE_WINDOW)
@@ -50,7 +50,6 @@ static void budgie_greeter_window_init(BudgieGreeterWindow *self)
         GtkStyleContext *context = NULL;
         GdkVisual *visual = NULL;
         GdkScreen *screen = NULL;
-        GtkWidget *top_panel = NULL;
         GtkWidget *layout = NULL;
 
         self->priv = budgie_greeter_window_get_instance_private(self);
@@ -84,9 +83,8 @@ static void budgie_greeter_window_init(BudgieGreeterWindow *self)
         gtk_container_add(GTK_CONTAINER(self), layout);
 
         /* Create the fake top panel */
-        top_panel = budgie_greeter_window_create_panel(self);
-        self->priv->top_panel = top_panel;
-        gtk_box_pack_start(GTK_BOX(layout), top_panel, FALSE, FALSE, 0);
+        budgie_greeter_window_create_panel(self);
+        gtk_box_pack_start(GTK_BOX(layout), self->priv->top_panel, FALSE, FALSE, 0);
 
         gtk_widget_show_all(GTK_WIDGET(self));
 }
@@ -112,7 +110,7 @@ static void budgie_greeter_window_class_init(BudgieGreeterWindowClass *klazz)
 /**
  * Create a panel area to emulate BudgiePanel
  */
-static GtkWidget *budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
+static void budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
 {
         GtkWidget *ebox = NULL;
         GtkWidget *layout = NULL;
@@ -150,7 +148,7 @@ static GtkWidget *budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
 
         gtk_box_pack_start(GTK_BOX(layout), shadow, FALSE, FALSE, 0);
 
-        return ebox;
+        self->priv->top_panel = ebox;
 }
 
 /**
