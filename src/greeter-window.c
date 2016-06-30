@@ -41,11 +41,32 @@ static gboolean budgie_greeter_window_delete(GtkWidget *widget, gpointer userdat
  */
 static void budgie_greeter_window_init(BudgieGreeterWindow *self)
 {
+        GtkStyleContext *context = NULL;
+        GdkVisual *visual = NULL;
+        GdkScreen *screen = NULL;
+
         self->priv = budgie_greeter_window_get_instance_private(self);
         g_signal_connect(G_OBJECT(self),
                          "delete-event",
                          G_CALLBACK(budgie_greeter_window_delete),
                          NULL);
+
+        /* Set up an RGBA visual */
+        screen = gdk_screen_get_default();
+        visual = gdk_screen_get_rgba_visual(screen);
+        if (visual) {
+                gtk_widget_set_visual(GTK_WIDGET(self), visual);
+        } else {
+                fprintf(stderr, "Cannot set visual\n");
+        }
+
+        /* Some initial presentation cruft. */
+        gtk_widget_set_size_request(GTK_WIDGET(self), 1024, 768);
+        gtk_window_set_position(GTK_WINDOW(self), GTK_WIN_POS_CENTER);
+
+        /* Get some styling in place */
+        context = gtk_widget_get_style_context(GTK_WIDGET(self));
+        gtk_style_context_add_class(context, "osd");
 }
 
 /**
