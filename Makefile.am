@@ -18,6 +18,8 @@ sbin_PROGRAMS = \
 	lightdm-budgie-greeter
 
 lightdm_budgie_greeter_SOURCES = \
+	src/greeter-window.h	 \
+	src/greeter-window.c	 \
 	src/main.c
 
 lightdm_budgie_greeter_CFLAGS = \

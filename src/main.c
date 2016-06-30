@@ -13,12 +13,22 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 
+#include "greeter-window.h"
+
 int main(int argc, char **argv)
 {
         gtk_init(&argc, &argv);
+        GtkWidget *window = NULL;
 
         /* Hack until we start using the theme library */
         budgie_please_link_me_libtool_i_have_great_themes();
+
+        window = budgie_greeter_window_new();
+        gtk_window_present(GTK_WINDOW(window));
+
+        gtk_main();
+
+        gtk_widget_destroy(window);
 
         return EXIT_SUCCESS;
 }
