@@ -12,11 +12,13 @@ LT_INIT
 m4_define([glib_required_version], [2.42.0])
 m4_define([gtk_required_version], [3.16.0])
 m4_define([gdesktop_required_version], [3.16.0])
+m4_define([budgie_required_version], [1])
 
 PKG_CHECK_MODULES([GREETER], [
         glib-2.0 >= glib_required_version
         gtk+-3.0 >= gtk_required_version
         gnome-desktop-3.0
+        budgie-theme-1.0 >= budgie_required_version
 ])
 
 AC_CONFIG_FILES([Makefile])

@@ -9,12 +9,16 @@
  * of the License, or (at your option) any later version.
  */
 
+#include <budgie-desktop/theme.h>
 #include <gtk/gtk.h>
 #include <stdlib.h>
 
 int main(int argc, char **argv)
 {
         gtk_init(&argc, &argv);
+
+        /* Hack until we start using the theme library */
+        budgie_please_link_me_libtool_i_have_great_themes();
 
         return EXIT_SUCCESS;
 }
