@@ -9,6 +9,8 @@
  * of the License, or (at your option) any later version.
  */
 
+#include <budgie-desktop/theme.h>
+
 #include "greeter-window.h"
 #include "util.h"
 
@@ -21,6 +23,7 @@ struct BudgieGreeterWindowPrivate {
  */
 static void budgie_greeter_window_init(BudgieGreeterWindow *self);
 static GtkWidget *budgie_greeter_window_create_panel(BudgieGreeterWindow *self);
+static void budgie_greeter_window_init_css(void);
 
 G_DEFINE_TYPE_WITH_PRIVATE(BudgieGreeterWindow, budgie_greeter_window, GTK_TYPE_WINDOW)
 
@@ -64,6 +67,9 @@ static void budgie_greeter_window_init(BudgieGreeterWindow *self)
         } else {
                 fprintf(stderr, "Cannot set visual\n");
         }
+
+        /* Load the CSS in */
+        budgie_greeter_window_init_css();
 
         /* Some initial presentation cruft. */
         gtk_widget_set_size_request(GTK_WIDGET(self), 1024, 768);
@@ -137,6 +143,41 @@ static GtkWidget *budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
         gtk_box_pack_start(GTK_BOX(layout), shadow, FALSE, FALSE, 0);
 
         return ebox;
+}
+
+/**
+ * Set up the theming by.. basically borrowing it from Budgie :P
+ */
+static void budgie_greeter_window_init_css()
+{
+        /* TODO: Check for the HC variant! */
+        char *theme_name = budgie_form_theme_path("theme.css");
+        GtkCssProvider *css_prov = NULL;
+        GFile *file = NULL;
+        GdkScreen *screen = NULL;
+
+        file = g_file_new_for_uri(theme_name);
+        if (!file) {
+                fprintf(stderr, "Unable to locate theme\n");
+                goto end;
+        }
+
+        css_prov = gtk_css_provider_new();
+        if (!gtk_css_provider_load_from_file(css_prov, file, NULL)) {
+                fprintf(stderr, "Failed to load theme %s\n", theme_name);
+                goto end;
+        }
+
+        screen = gdk_screen_get_default();
+        gtk_style_context_add_provider_for_screen(screen,
+                                                  GTK_STYLE_PROVIDER(css_prov),
+                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+end:
+        g_free(theme_name);
+        if (file) {
+                g_object_unref(file);
+        }
 }
 
 /*
