@@ -87,6 +87,8 @@ static void budgie_greeter_window_init(BudgieGreeterWindow *self)
         top_panel = budgie_greeter_window_create_panel(self);
         self->priv->top_panel = top_panel;
         gtk_box_pack_start(GTK_BOX(layout), top_panel, FALSE, FALSE, 0);
+
+        gtk_widget_show_all(GTK_WIDGET(self));
 }
 
 /**
@@ -117,10 +119,12 @@ static GtkWidget *budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
         GtkWidget *shadow = NULL;
         GtkWidget *panel_area = NULL;
         GtkStyleContext *context = NULL;
+        GtkWidget *tmp_label = NULL;
 
         ebox = gtk_event_box_new();
         context = gtk_widget_get_style_context(ebox);
         gtk_style_context_add_class(context, "budgie-container");
+        gtk_style_context_add_class(context, "top");
 
         /* Fix layout */
         layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -130,9 +134,13 @@ static GtkWidget *budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
         panel_area = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
         context = gtk_widget_get_style_context(panel_area);
         gtk_style_context_add_class(context, "budgie-panel");
-
         gtk_box_pack_start(GTK_BOX(layout), panel_area, FALSE, FALSE, 0);
         gtk_widget_set_size_request(panel_area, -1, 35);
+
+        /* Dumb content */
+        tmp_label = gtk_label_new("I am a fake panel, don't tell anyone.");
+        g_object_set(tmp_label, "margin-start", 6, NULL);
+        gtk_box_pack_start(GTK_BOX(panel_area), tmp_label, FALSE, FALSE, 0);
 
         /* Create the "shadow" */
         shadow = gtk_event_box_new();
