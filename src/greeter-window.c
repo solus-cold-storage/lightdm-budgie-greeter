@@ -88,3 +88,16 @@ static void budgie_greeter_window_class_init(BudgieGreeterWindowClass *klazz)
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
         obj_class->dispose = budgie_greeter_window_dispose;
 }
+
+/*
+ * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
+ *
+ * Local variables:
+ * c-basic-offset: 8
+ * tab-width: 8
+ * indent-tabs-mode: nil
+ * End:
+ *
+ * vi: set shiftwidth=8 tabstop=8 expandtab:
+ * :indentSize=8:tabSize=8:noTabs=true:
+ */
