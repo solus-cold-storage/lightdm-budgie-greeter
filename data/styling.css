@@ -6,3 +6,7 @@
     border: 2px solid alpha(black, 0.96);
     border-radius: 4px;
 }
+
+.budgie-greeter-window {
+    background-color: rgba(53, 57, 69, 0.45);
+}

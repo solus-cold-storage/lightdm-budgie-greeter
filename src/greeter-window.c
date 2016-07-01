@@ -79,7 +79,8 @@ static void budgie_greeter_window_init(BudgieGreeterWindow *self)
 
         /* Get some styling in place */
         context = gtk_widget_get_style_context(GTK_WIDGET(self));
-        gtk_style_context_add_class(context, "osd");
+        gtk_style_context_add_class(context, "budgie-container");
+        gtk_style_context_add_class(context, "budgie-greeter-window");
 
         /* Sort the layout .. out */
         layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -130,7 +131,6 @@ static void budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
         ebox = gtk_event_box_new();
         context = gtk_widget_get_style_context(ebox);
         gtk_style_context_add_class(context, "budgie-container");
-        gtk_style_context_add_class(context, "budgie-greeter-window");
         gtk_style_context_add_class(context, "top");
 
         /* Fix layout */
@@ -205,11 +205,11 @@ static void budgie_greeter_window_create_form(BudgieGreeterWindow *self)
         GtkWidget *image = NULL;
         GtkWidget *ebox = NULL;
         GtkStyleContext *context = NULL;
-        guint row = 0;
-        guint column = 0;
-
-        /* Use a grid for the main form layout */
-        layout = gtk_grid_new();
+        GtkWidget *entry = NULL;
+        GtkWidget *button = NULL;
+        GtkWidget *hbox = NULL;
+        /* Use a box for the main form layout */
+        layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
         g_object_set(layout, "halign", GTK_ALIGN_CENTER, "valign", GTK_ALIGN_CENTER, NULL);
 
         image = gtk_image_new_from_icon_name("avatar-default", GTK_ICON_SIZE_DIALOG);
@@ -217,9 +217,33 @@ static void budgie_greeter_window_create_form(BudgieGreeterWindow *self)
         // image = gtk_image_new_from_file("/usr/share/pixmaps/faces/lightning.jpg");
         ebox = gtk_event_box_new();
         gtk_container_add(GTK_CONTAINER(ebox), image);
-        gtk_grid_attach(GTK_GRID(layout), ebox, column, row, 1, 1);
+        gtk_box_pack_start(GTK_BOX(layout), ebox, FALSE, FALSE, 0);
         context = gtk_widget_get_style_context(ebox);
         gtk_style_context_add_class(context, "greeter-photo");
+
+        /* Hbox is linked */
+        hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+        context = gtk_widget_get_style_context(hbox);
+        gtk_style_context_add_class(context, "raven");
+        gtk_style_context_remove_class(context, "background");
+        gtk_widget_set_margin_top(hbox, 18);
+
+        gtk_box_pack_start(GTK_BOX(layout), hbox, FALSE, FALSE, 0);
+
+        /* Password */
+        entry = gtk_entry_new();
+        gtk_widget_set_vexpand(entry, TRUE);
+        gtk_widget_set_valign(entry, GTK_ALIGN_FILL);
+        gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
+        gtk_box_pack_start(GTK_BOX(hbox), entry, TRUE, TRUE, 0);
+        context = gtk_widget_get_style_context(entry);
+        gtk_style_context_set_junction_sides(context, GTK_JUNCTION_RIGHT);
+
+        /* Button */
+        button = gtk_button_new_from_icon_name("pan-end-symbolic", GTK_ICON_SIZE_BUTTON);
+        gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
+        context = gtk_widget_get_style_context(button);
+        gtk_style_context_set_junction_sides(context, GTK_JUNCTION_LEFT);
 
         self->priv->form = layout;
 }
