@@ -77,7 +77,7 @@ static void budgie_greeter_window_init(BudgieGreeterWindow *self)
 
         /* Get some styling in place */
         context = gtk_widget_get_style_context(GTK_WIDGET(self));
-        gtk_style_context_add_class(context, "osd");
+        gtk_style_context_add_class(context, "budgie-container");
 
         /* Sort the layout .. out */
         layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
