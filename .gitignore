@@ -16,5 +16,9 @@ missing
 *.o
 stamp-*
 
+# glib resources
+budgie-greeter-resources.c
+budgie-greeter-resources.h
+
 # Actual binary itself
 lightdm-budgie-greeter

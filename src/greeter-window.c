@@ -130,6 +130,7 @@ static void budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
         ebox = gtk_event_box_new();
         context = gtk_widget_get_style_context(ebox);
         gtk_style_context_add_class(context, "budgie-container");
+        gtk_style_context_add_class(context, "budgie-greeter-window");
         gtk_style_context_add_class(context, "top");
 
         /* Fix layout */
@@ -202,6 +203,7 @@ static void budgie_greeter_window_create_form(BudgieGreeterWindow *self)
 {
         GtkWidget *layout = NULL;
         GtkWidget *image = NULL;
+        GtkStyleContext *context = NULL;
         guint row = 0;
         guint column = 0;
 
@@ -209,25 +211,23 @@ static void budgie_greeter_window_create_form(BudgieGreeterWindow *self)
         layout = gtk_grid_new();
         g_object_set(layout, "halign", GTK_ALIGN_CENTER, "valign", GTK_ALIGN_CENTER, NULL);
 
-        image = gtk_image_new_from_icon_name("avatar-default", GTK_ICON_SIZE_DIALOG);
-        gtk_image_set_pixel_size(GTK_IMAGE(image), 96);
+        // image = gtk_image_new_from_icon_name("avatar-default", GTK_ICON_SIZE_DIALOG);
+        // gtk_image_set_pixel_size(GTK_IMAGE(image), 96);
+        image = gtk_image_new_from_file("/usr/share/pixmaps/faces/lightning.jpg");
         gtk_grid_attach(GTK_GRID(layout), image, column, row, 1, 1);
+        context = gtk_widget_get_style_context(image);
+        gtk_style_context_add_class(context, "greeter-photo");
 
         self->priv->form = layout;
 }
 
-/**
- * Set up the theming by.. basically borrowing it from Budgie :P
- */
-static void budgie_greeter_window_init_css()
+static void budgie_greeter_load_css_path(const char *path)
 {
-        /* TODO: Check for the HC variant! */
-        char *theme_name = budgie_form_theme_path("theme.css");
         GtkCssProvider *css_prov = NULL;
         GFile *file = NULL;
         GdkScreen *screen = NULL;
 
-        file = g_file_new_for_uri(theme_name);
+        file = g_file_new_for_uri(path);
         if (!file) {
                 fprintf(stderr, "Unable to locate theme\n");
                 goto end;
@@ -235,7 +235,7 @@ static void budgie_greeter_window_init_css()
 
         css_prov = gtk_css_provider_new();
         if (!gtk_css_provider_load_from_file(css_prov, file, NULL)) {
-                fprintf(stderr, "Failed to load theme %s\n", theme_name);
+                fprintf(stderr, "Failed to load theme %s\n", path);
                 goto end;
         }
 
@@ -245,10 +245,23 @@ static void budgie_greeter_window_init_css()
                                                   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 end:
-        g_free(theme_name);
         if (file) {
                 g_object_unref(file);
         }
+}
+
+/**
+ * Set up the theming by.. basically borrowing it from Budgie :P
+ */
+static void budgie_greeter_window_init_css()
+{
+        /* TODO: Check for the HC variant! */
+        char *theme_name = budgie_form_theme_path("theme.css");
+        budgie_greeter_load_css_path(theme_name);
+        g_free(theme_name);
+
+        /* Load our additional resources */
+        budgie_greeter_load_css_path("resource://com/solus-project/budgie/greeter/styling.css");
 }
 
 /*

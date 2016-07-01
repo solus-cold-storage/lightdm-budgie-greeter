@@ -1,7 +1,9 @@
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = ${top_srcdir}/README.md \
-	     ${top_srcdir}/LICENSE
+EXTRA_DIST = ${top_srcdir}/README.md				\
+	     ${top_srcdir}/LICENSE				\
+	     ${top_srcdir}/data/budgie-greeter.gresource.xml 	\
+	     ${top_srcdir}/data/styling.css
 
 AM_CFLAGS = \
 	-fstack-protector -Wall -pedantic \
@@ -14,14 +16,32 @@ AM_CFLAGS = \
 AM_CPPFLAGS = \
 	-I $(top_srcdir)/src
 
+greeter_resources = $(shell glib-compile-resources --sourcedir=$(top_srcdir)/data --generate-dependencies $(top_srcdir)/data/budgie-greeter.gresource.xml)
+
+BUILT_SOURCES = \
+	budgie-greeter-resources.h \
+	budgie-greeter-resources.c
+
+CLEANFILES = \
+	$(BUILT_SOURCES)
+
+# resources
+budgie-greeter-resources.h: $(top_srcdir)/data/budgie-greeter.gresource.xml $(greeter_resources)
+	glib-compile-resources --target=$@ --sourcedir=$(top_srcdir)/data --generate-header --c-name budgie_greeter $<
+
+budgie-greeter-resources.c: $(top_srcdir)/data/budgie-greeter.gresource.xml $(greeter_resources)
+	glib-compile-resources --target=$@ --sourcedir=$(top_srcdir)/data --generate-source --c-name budgie_greeter $<
+
 sbin_PROGRAMS = \
 	lightdm-budgie-greeter
 
-lightdm_budgie_greeter_SOURCES = \
-	src/greeter-window.h	 \
-	src/greeter-window.c	 \
-	src/main.c		 \
-	src/util.h
+lightdm_budgie_greeter_SOURCES = 	\
+	src/greeter-window.h	 	\
+	src/greeter-window.c	 	\
+	src/main.c		 	\
+	src/util.h		 	\
+	budgie-greeter-resources.h	\
+	budgie-greeter-resources.c
 
 lightdm_budgie_greeter_CFLAGS = \
 	$(GREETER_CFLAGS)	\

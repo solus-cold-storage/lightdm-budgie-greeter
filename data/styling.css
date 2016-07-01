@@ -1,0 +1,8 @@
+/**
+ * The main greeter logo
+ */
+.greeter-photo {
+    background-color: white;
+    border: 2px solid alpha(black, 0.96);
+    border-radius: 4px;
+}
