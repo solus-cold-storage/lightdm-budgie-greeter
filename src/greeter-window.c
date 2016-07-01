@@ -16,8 +16,11 @@
 
 struct BudgieGreeterWindowPrivate {
         GtkWidget *top_panel;
+        GtkWidget *top_revealer;
         GtkWidget *session_chooser;
         GtkWidget *form;
+        GtkWidget *form_revealer;
+        gboolean first_map;
 };
 
 /**
@@ -46,6 +49,26 @@ static gboolean budgie_greeter_window_delete(__budgie_unused__ GtkWidget *widget
 }
 
 /**
+ * Handle first map transition
+ */
+static gboolean budgie_greeter_window_first_map(BudgieGreeterWindow *self)
+{
+        gtk_revealer_set_reveal_child(GTK_REVEALER(self->priv->top_revealer), TRUE);
+        gtk_revealer_set_reveal_child(GTK_REVEALER(self->priv->form_revealer), TRUE);
+        return FALSE;
+}
+
+static gboolean budgie_greeter_window_map(BudgieGreeterWindow *self,
+                                          __budgie_unused__ gpointer userdata)
+{
+        if (!self->priv->first_map) {
+                g_timeout_add(250, (GSourceFunc)budgie_greeter_window_first_map, self);
+                self->priv->first_map = TRUE;
+        }
+        return GDK_EVENT_PROPAGATE;
+}
+
+/**
  * Initialise our GreeterWindow correctly
  */
 static void budgie_greeter_window_init(BudgieGreeterWindow *self)
@@ -60,6 +83,9 @@ static void budgie_greeter_window_init(BudgieGreeterWindow *self)
                          "delete-event",
                          G_CALLBACK(budgie_greeter_window_delete),
                          NULL);
+
+        /* Handle mapping */
+        g_signal_connect(G_OBJECT(self), "map-event", G_CALLBACK(budgie_greeter_window_map), NULL);
 
         /* Set up an RGBA visual */
         screen = gdk_screen_get_default();
@@ -88,11 +114,11 @@ static void budgie_greeter_window_init(BudgieGreeterWindow *self)
 
         /* Create the fake top panel */
         budgie_greeter_window_create_panel(self);
-        gtk_box_pack_start(GTK_BOX(layout), self->priv->top_panel, FALSE, FALSE, 0);
+        gtk_box_pack_start(GTK_BOX(layout), self->priv->top_revealer, FALSE, FALSE, 0);
 
         /* Create the main login form */
         budgie_greeter_window_create_form(self);
-        gtk_box_pack_start(GTK_BOX(layout), self->priv->form, TRUE, TRUE, 0);
+        gtk_box_pack_start(GTK_BOX(layout), self->priv->form_revealer, TRUE, TRUE, 0);
 
         gtk_widget_show_all(GTK_WIDGET(self));
 }
@@ -127,6 +153,7 @@ static void budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
         GtkStyleContext *context = NULL;
         GtkWidget *session_label = NULL;
         GtkWidget *combo = NULL;
+        GtkWidget *top_revealer = NULL;
 
         ebox = gtk_event_box_new();
         context = gtk_widget_get_style_context(ebox);
@@ -194,6 +221,14 @@ static void budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
         gtk_box_pack_start(GTK_BOX(layout), shadow, FALSE, FALSE, 0);
 
         self->priv->top_panel = ebox;
+
+        /* Add it into a revealer so we can expose it shortly after map */
+        top_revealer = gtk_revealer_new();
+        gtk_revealer_set_transition_type(GTK_REVEALER(top_revealer),
+                                         GTK_REVEALER_TRANSITION_TYPE_SLIDE_DOWN);
+        gtk_revealer_set_transition_duration(GTK_REVEALER(top_revealer), 600);
+        gtk_container_add(GTK_CONTAINER(top_revealer), ebox);
+        self->priv->top_revealer = top_revealer;
 }
 
 /**
@@ -208,6 +243,8 @@ static void budgie_greeter_window_create_form(BudgieGreeterWindow *self)
         GtkWidget *entry = NULL;
         GtkWidget *button = NULL;
         GtkWidget *hbox = NULL;
+        GtkWidget *form_revealer = NULL;
+
         /* Use a box for the main form layout */
         layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
         g_object_set(layout, "halign", GTK_ALIGN_CENTER, "valign", GTK_ALIGN_CENTER, NULL);
@@ -244,6 +281,14 @@ static void budgie_greeter_window_create_form(BudgieGreeterWindow *self)
         gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
         context = gtk_widget_get_style_context(button);
         gtk_style_context_set_junction_sides(context, GTK_JUNCTION_LEFT);
+
+        /* Allow transition on form */
+        form_revealer = gtk_revealer_new();
+        gtk_container_add(GTK_CONTAINER(form_revealer), layout);
+        gtk_revealer_set_transition_type(GTK_REVEALER(form_revealer),
+                                         GTK_REVEALER_TRANSITION_TYPE_CROSSFADE);
+        gtk_revealer_set_transition_duration(GTK_REVEALER(form_revealer), 1200);
+        self->priv->form_revealer = form_revealer;
 
         self->priv->form = layout;
 }
