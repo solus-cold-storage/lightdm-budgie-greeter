@@ -16,6 +16,7 @@
 
 struct BudgieGreeterWindowPrivate {
         GtkWidget *top_panel;
+        GtkWidget *session_chooser;
 };
 
 /**
@@ -117,7 +118,8 @@ static void budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
         GtkWidget *shadow = NULL;
         GtkWidget *panel_area = NULL;
         GtkStyleContext *context = NULL;
-        GtkWidget *tmp_label = NULL;
+        GtkWidget *session_label = NULL;
+        GtkWidget *combo = NULL;
 
         ebox = gtk_event_box_new();
         context = gtk_widget_get_style_context(ebox);
@@ -130,15 +132,51 @@ static void budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
 
         /* Create the ""panel"" */
         panel_area = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+        gtk_widget_set_valign(panel_area, GTK_ALIGN_START);
+        gtk_widget_set_vexpand(panel_area, FALSE);
         context = gtk_widget_get_style_context(panel_area);
         gtk_style_context_add_class(context, "budgie-panel");
         gtk_box_pack_start(GTK_BOX(layout), panel_area, FALSE, FALSE, 0);
         gtk_widget_set_size_request(panel_area, -1, 35);
 
+        /* Session label */
+        session_label = gtk_label_new("Session");
+        g_object_set(session_label, "margin-start", 12, NULL);
+        gtk_box_pack_start(GTK_BOX(panel_area), session_label, FALSE, FALSE, 0);
+
+        /* Session chooser */
+        combo = gtk_combo_box_text_new();
+        /* Don't eat all the panel for gawdsake */
+        g_object_set(combo,
+                     "margin-top",
+                     2,
+                     "margin-bottom",
+                     2,
+                     "margin-start",
+                     12,
+                     "halign",
+                     GTK_ALIGN_START,
+                     "valign",
+                     GTK_ALIGN_CENTER,
+                     NULL);
+
+        gtk_box_pack_start(GTK_BOX(panel_area), combo, FALSE, FALSE, 0);
+        /* Ensure sufficient internal padding so the down arrow isn't too close/derpy */
+        g_object_set(gtk_bin_get_child(GTK_BIN(combo)),
+                     "margin-start",
+                     4,
+                     "margin-end",
+                     26,
+                     "margin-top",
+                     0,
+                     "margin-bottom",
+                     0,
+                     NULL);
+        self->priv->session_chooser = combo;
+
         /* Dumb content */
-        tmp_label = gtk_label_new("I am a fake panel, don't tell anyone.");
-        g_object_set(tmp_label, "margin-start", 6, NULL);
-        gtk_box_pack_start(GTK_BOX(panel_area), tmp_label, FALSE, FALSE, 0);
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "Budgie Desktop");
+        gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
         /* Create the "shadow" */
         shadow = gtk_event_box_new();
