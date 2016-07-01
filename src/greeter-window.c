@@ -203,6 +203,7 @@ static void budgie_greeter_window_create_form(BudgieGreeterWindow *self)
 {
         GtkWidget *layout = NULL;
         GtkWidget *image = NULL;
+        GtkWidget *ebox = NULL;
         GtkStyleContext *context = NULL;
         guint row = 0;
         guint column = 0;
@@ -212,10 +213,12 @@ static void budgie_greeter_window_create_form(BudgieGreeterWindow *self)
         g_object_set(layout, "halign", GTK_ALIGN_CENTER, "valign", GTK_ALIGN_CENTER, NULL);
 
         image = gtk_image_new_from_icon_name("avatar-default", GTK_ICON_SIZE_DIALOG);
-        gtk_image_set_pixel_size(GTK_IMAGE(image), 96);
+        gtk_image_set_pixel_size(GTK_IMAGE(image), 256);
         // image = gtk_image_new_from_file("/usr/share/pixmaps/faces/lightning.jpg");
-        gtk_grid_attach(GTK_GRID(layout), image, column, row, 1, 1);
-        context = gtk_widget_get_style_context(image);
+        ebox = gtk_event_box_new();
+        gtk_container_add(GTK_CONTAINER(ebox), image);
+        gtk_grid_attach(GTK_GRID(layout), ebox, column, row, 1, 1);
+        context = gtk_widget_get_style_context(ebox);
         gtk_style_context_add_class(context, "greeter-photo");
 
         self->priv->form = layout;
