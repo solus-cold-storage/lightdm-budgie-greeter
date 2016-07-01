@@ -17,6 +17,7 @@
 struct BudgieGreeterWindowPrivate {
         GtkWidget *top_panel;
         GtkWidget *session_chooser;
+        GtkWidget *form;
 };
 
 /**
@@ -24,6 +25,7 @@ struct BudgieGreeterWindowPrivate {
  */
 static void budgie_greeter_window_init(BudgieGreeterWindow *self);
 static void budgie_greeter_window_create_panel(BudgieGreeterWindow *self);
+static void budgie_greeter_window_create_form(BudgieGreeterWindow *self);
 static void budgie_greeter_window_init_css(void);
 
 G_DEFINE_TYPE_WITH_PRIVATE(BudgieGreeterWindow, budgie_greeter_window, GTK_TYPE_WINDOW)
@@ -77,7 +79,7 @@ static void budgie_greeter_window_init(BudgieGreeterWindow *self)
 
         /* Get some styling in place */
         context = gtk_widget_get_style_context(GTK_WIDGET(self));
-        gtk_style_context_add_class(context, "budgie-container");
+        gtk_style_context_add_class(context, "osd");
 
         /* Sort the layout .. out */
         layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -86,6 +88,10 @@ static void budgie_greeter_window_init(BudgieGreeterWindow *self)
         /* Create the fake top panel */
         budgie_greeter_window_create_panel(self);
         gtk_box_pack_start(GTK_BOX(layout), self->priv->top_panel, FALSE, FALSE, 0);
+
+        /* Create the main login form */
+        budgie_greeter_window_create_form(self);
+        gtk_box_pack_start(GTK_BOX(layout), self->priv->form, TRUE, TRUE, 0);
 
         gtk_widget_show_all(GTK_WIDGET(self));
 }
@@ -187,6 +193,27 @@ static void budgie_greeter_window_create_panel(BudgieGreeterWindow *self)
         gtk_box_pack_start(GTK_BOX(layout), shadow, FALSE, FALSE, 0);
 
         self->priv->top_panel = ebox;
+}
+
+/**
+ * Create the main login form.
+ */
+static void budgie_greeter_window_create_form(BudgieGreeterWindow *self)
+{
+        GtkWidget *layout = NULL;
+        GtkWidget *image = NULL;
+        guint row = 0;
+        guint column = 0;
+
+        /* Use a grid for the main form layout */
+        layout = gtk_grid_new();
+        g_object_set(layout, "halign", GTK_ALIGN_CENTER, "valign", GTK_ALIGN_CENTER, NULL);
+
+        image = gtk_image_new_from_icon_name("avatar-default", GTK_ICON_SIZE_DIALOG);
+        gtk_image_set_pixel_size(GTK_IMAGE(image), 96);
+        gtk_grid_attach(GTK_GRID(layout), image, column, row, 1, 1);
+
+        self->priv->form = layout;
 }
 
 /**
