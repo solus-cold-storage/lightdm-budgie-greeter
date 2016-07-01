@@ -20,6 +20,7 @@ struct BudgieGreeterWindowPrivate {
         GtkWidget *session_chooser;
         GtkWidget *form;
         GtkWidget *form_revealer;
+        GtkWidget *password_box;
         gboolean first_map;
 };
 
@@ -55,6 +56,7 @@ static gboolean budgie_greeter_window_first_map(BudgieGreeterWindow *self)
 {
         gtk_revealer_set_reveal_child(GTK_REVEALER(self->priv->top_revealer), TRUE);
         gtk_revealer_set_reveal_child(GTK_REVEALER(self->priv->form_revealer), TRUE);
+        gtk_widget_grab_focus(self->priv->password_box);
         return FALSE;
 }
 
@@ -275,6 +277,7 @@ static void budgie_greeter_window_create_form(BudgieGreeterWindow *self)
         gtk_box_pack_start(GTK_BOX(hbox), entry, TRUE, TRUE, 0);
         context = gtk_widget_get_style_context(entry);
         gtk_style_context_set_junction_sides(context, GTK_JUNCTION_RIGHT);
+        self->priv->password_box = entry;
 
         /* Button */
         button = gtk_button_new_from_icon_name("pan-end-symbolic", GTK_ICON_SIZE_BUTTON);
